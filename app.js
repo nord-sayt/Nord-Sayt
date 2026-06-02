@@ -1,64 +1,77 @@
-// ---------------- USER ----------------
-function register(){
-  let u = user.value;
-  let p = pass.value;
+import { sendTicket, listenTickets, replyTicket } from "./tickets.js";
+import { addLog } from "./logs.js";
+import { getStats } from "./analytics.js";
 
-  localStorage.setItem("u_"+u,p);
-  alert("ثبت شد");
+let app = document.getElementById("app");
+
+let user = prompt("Username:");
+addLog(user,"LOGIN");
+
+// 👑 roles
+const admins = ["mohammadamin","admin1","admin2","admin3","admin4","admin5"];
+
+window.show = function(page){
+
+// HOME
+if(page=="home"){
+app.innerHTML=`
+<div class="card">
+<h1>🔥 NORD GOD PANEL</h1>
+<p>User: ${user}</p>
+</div>`;
 }
 
-function login(){
-  let u = user.value;
-  let p = pass.value;
-
-  if(localStorage.getItem("u_"+u)===p){
-    localStorage.setItem("login",u);
-    location.reload();
-  }else alert("اشتباه");
+// SUPPORT
+if(page=="support"){
+app.innerHTML=`
+<div class="card">
+<h2>پشتیبانی</h2>
+<textarea id="msg"></textarea>
+<button onclick="send()">ارسال</button>
+</div>`;
 }
 
-function logout(){
-  localStorage.removeItem("login");
-  location.reload();
+// ADMIN
+if(page=="admin"){
+
+if(!admins.includes(user)){
+app.innerHTML="⛔ Access Denied";
+return;
 }
 
-// ---------------- SUPPORT ----------------
-function sendTicket(){
-  let msg = document.getElementById("msg").value;
+listenTickets(tickets=>{
+app.innerHTML=`
+<div class="card">
+<h2>ADMIN PANEL</h2>
 
-  let data = JSON.parse(localStorage.getItem("tickets")||"[]");
+${tickets.map(t=>`
+<div class="card">
+<p>${t.user}</p>
+<p>${t.msg}</p>
+<p>Reply: ${t.reply}</p>
 
-  data.push({
-    user: localStorage.getItem("login"),
-    msg: msg,
-    reply:"در انتظار پاسخ"
-  });
+<input id="r_${t.id}">
+<button onclick="reply('${t.id}')">پاسخ</button>
+</div>
+`).join("")}
 
-  localStorage.setItem("tickets",JSON.stringify(data));
-  alert("ارسال شد");
+</div>`;
+});
+
 }
 
-// ---------------- ADMIN REPLY ----------------
-function reply(i){
-  let data = JSON.parse(localStorage.getItem("tickets"));
-
-  let r = document.getElementById("r"+i).value;
-
-  data[i].reply = r;
-
-  localStorage.setItem("tickets",JSON.stringify(data));
-  location.reload();
 }
 
-// ---------------- ADD DOWNLOAD ----------------
-function addFile(){
-  let f = document.getElementById("file").value;
-  let d = document.getElementById("desc").value;
+// 📩 send ticket
+window.send = async function(){
+let msg = document.getElementById("msg").value;
+await sendTicket(user,msg);
+addLog(user,"SEND_TICKET");
+alert("sent");
+}
 
-  let files = JSON.parse(localStorage.getItem("files")||"[]");
-
-  files.push({file:f,desc:d});
-
-  localStorage.setItem("files",JSON.stringify(files));
-  location.reload();
+// 💬 reply
+window.reply = async function(id){
+let text = document.getElementById("r_"+id).value;
+await replyTicket(id,text);
 }
