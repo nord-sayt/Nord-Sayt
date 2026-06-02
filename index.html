@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<nav>
+<button onclick="home()">خانه</button>
+<button onclick="profile()">پروفایل</button>
+<button onclick="support()">پشتیبانی</button>
+<button onclick="downloads()">دانلود</button>
+<button onclick="rules()">قوانین</button>
+<button onclick="about()">درباره ما</button>
+<button onclick="ip()">IP</button>
+<button onclick="team()">تیم</button>
+<button onclick="admin()">ادمین</button>
+</nav>
+
+<div id="app"></div>
+
+<script src="app.js"></script>
+
+<script>
+// ---------------- NAV ----------------
+function home(){
+app.innerHTML=`
+<div class="card">
+<h1>Nord Server</h1>
+<p>Owner: mohammadamin</p>
+</div>`;
+}
+
+function profile(){
+let u=localStorage.getItem("login");
+
+app.innerHTML=`
+<div class="card">
+<h2>پروفایل</h2>
+<p>${u}</p>
+<button onclick="logout()">خروج</button>
+</div>`;
+}
+
+// ---------------- SUPPORT ----------------
+function support(){
+app.innerHTML=`
+<div class="card">
+<h2>پشتیبانی</h2>
+
+<p>📞 09212302379</p>
+<p>📱 @ma_shahripour</p>
+
+<textarea id="msg"></textarea>
+<button onclick="sendTicket()">ارسال</button>
+</div>`;
+}
+
+// ---------------- DOWNLOADS ----------------
+function downloads(){
+let files=JSON.parse(localStorage.getItem("files")||"[]");
+
+let html="";
+files.forEach(f=>{
+html+=`<div class="card">
+<p>${f.desc}</p>
+<a href="${f.file}" target="_blank">دانلود</a>
+</div>`;
+});
+
+app.innerHTML=`<div class="card"><h2>دانلود ها</h2>${html}</div>`;
+}
+
+// ---------------- RULES ----------------
+function rules(){
+app.innerHTML=`
+<div class="card">
+<h2>قوانین سرور</h2>
+<textarea placeholder="اینجا بنویس"></textarea>
+</div>`;
+}
+
+// ---------------- ABOUT ----------------
+function about(){
+app.innerHTML=`
+<div class="card">
+<h2>درباره ما</h2>
+<textarea></textarea>
+</div>`;
+}
+
+// ---------------- IP ----------------
+function ip(){
+app.innerHTML=`
+<div class="card">
+<h2>IP سرور</h2>
+<p>اینجا آیپی وارد می‌شود</p>
+</div>`;
+}
+
+// ---------------- TEAM ----------------
+function team(){
+app.innerHTML=`
+<div class="card">
+<h2>تیم 5 نفره</h2>
+<p>mohammadamin + 4 نفر دیگر</p>
+</div>`;
+}
+
+// ---------------- ADMIN ----------------
+function admin(){
+let t=JSON.parse(localStorage.getItem("tickets")||"[]");
+
+let html="";
+
+t.forEach((x,i)=>{
+html+=`
+<div class="card">
+<p>${x.user}</p>
+<p>${x.msg}</p>
+<p>پاسخ: ${x.reply}</p>
+
+<input id="r${i}">
+<button onclick="reply(${i})">پاسخ</button>
+</div>`;
+});
+
+app.innerHTML=`<div class="card"><h2>پنل ادمین</h2>${html}</div>`;
+}
+
+// start
+home();
+</script>
+
+</body>
+</html>
